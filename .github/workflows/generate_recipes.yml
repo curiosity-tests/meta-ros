@@ -1,4 +1,5 @@
 name: Generate Bitbake Recipes
+run-name: "Generate Bitbake Recipes ${{ inputs.leg || github.event_name }} ${{ inputs.racecar_run }}"
 on:    
   # Allow for manually running
   workflow_dispatch:
@@ -20,6 +21,22 @@ on:
         required: true
         type: boolean
         default: false
+      leg:
+        description: "baseline (uninstrumented) or instrumented (under chalk/curiosity)"
+        type: choice
+        options: [instrumented, baseline]
+        default: baseline
+      profile:
+        description: "CrashOverride chalk profile"
+        type: string
+        default: curiosity-tests-racecar
+      racecar_run:
+        description: "racecar correlation token, echoed into the run name"
+        type: string
+        default: ""
+
+env:
+  CHALK_ON: ${{ inputs.leg == 'instrumented' }}
 jobs:
   generate-recipes:
     runs-on: ubuntu-latest
